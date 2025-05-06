@@ -20,7 +20,7 @@ route /api {
         zone dynamic_example {
             key    {remote_host}
             events 2
-            window 5s
+            window 1s
         }
         log_key
     }
