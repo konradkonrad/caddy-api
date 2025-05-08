@@ -1,9 +1,11 @@
 :8080 {
 	@noApiKey {
 		not header Authorization "Bearer key1"
+		not header Authorization "Bearer key2"
 	}
 	@withApiKey {
 		header Authorization "Bearer key1"
+		header Authorization "Bearer key2"
 	}
 	route /api* {
 		rate_limit @noApiKey {
@@ -30,19 +32,21 @@
 			log_key
 		}
 		rate_limit @withApiKey {
+			comment "These are configured per bearer"
 			zone expensive {
 				match {
 					path *expensive*
 				}
-				key {remote_host}
+				key {header.Authorization}
 				events 1
 				window 1s
 			}
 			zone cheap {
-				key {remote_host}
+				key {header.Authorization}
 				events 10
 				window 1s
 			}
+			log_key
 		}
 		respond @noApiKey "I'm behind the rate limiter!"
 		respond @withApiKey "Premium"
