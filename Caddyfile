@@ -1,29 +1,40 @@
+{
+	security {
+		local identity store localdb {
+			realm local
+			path /data/caddy/users.json
+		}
+		authorization policy premium {
+			validate bearer header
+			crypto key mytest verify from env VERIFY_KEY_DIR as directory
+			acl rule {
+				comment allow users
+				match role authp/user
+				allow stop log info
+			}
+		}
+	}
+}
 :8080
 
-# security {
-#     authorization policy premium {
-#         
-#     }
-# }
-
 route /api {
-    rate_limit {
-        distributed
-        zone static_example {
-            match {
-                method GET
-            }
-            key    static
-            events 100
-            window 1m
-        }
-        zone dynamic_example {
-            key    {remote_host}
-            events 2
-            window 1s
-        }
-        log_key
-    }
-    respond "I'm behind the rate limiter!"
+	rate_limit {
+		distributed
+		zone static_example {
+			match {
+				method GET
+			}
+			key static
+			events 100
+			window 1m
+		}
+		zone dynamic_example {
+			key {remote_host}
+			events 2
+			window 1s
+		}
+		log_key
+	}
+	respond "I'm behind the rate limiter!"
 }
 respond "Not limited"
