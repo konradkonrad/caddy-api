@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 
-mkdir -p data/caddy/rate_limit data/caddy/keys
+mkdir -p data/caddy/{keys,locks,rate_limit/instances}
 
 openssl ecparam -genkey -name prime256v1 -noout \
   -out data/caddy/keys/sign_key.pem
 openssl ec -in data/caddy/keys/sign_key.pem -pubout \
   -out data/caddy/keys/verify_key.pem
-
-ls data/caddy/keys
 
 docker run --rm -it \
     -v $(pwd)/Caddyfile:/etc/caddy/Caddyfile \
@@ -16,7 +14,7 @@ docker run --rm -it \
 docker run --rm -it \
     -v $(pwd)/Caddyfile:/etc/caddy/Caddyfile:ro \
     -p 8080:8080 \
-    -v data:/data \
+    -v $(pwd)/data:/data \
     -e VERIFY_KEY_DIR=/data/caddy/keys \
     caddy-api /usr/bin/caddy run -c /etc/caddy/Caddyfile
 

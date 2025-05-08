@@ -1,4 +1,5 @@
 {
+	auto_https off
 	security {
 		local identity store localdb {
 			realm local
@@ -15,26 +16,27 @@
 		}
 	}
 }
-:8080
 
-route /api {
-	rate_limit {
-		distributed
-		zone static_example {
-			match {
-				method GET
+:8080 {
+	route /api {
+		rate_limit {
+			distributed
+			zone static_example {
+				match {
+					method GET
+				}
+				key static
+				events 10
+				window 1m
 			}
-			key static
-			events 100
-			window 1m
+			zone dynamic_example {
+				key {remote_host}
+				events 2
+				window 1s
+			}
+			log_key
 		}
-		zone dynamic_example {
-			key {remote_host}
-			events 2
-			window 1s
-		}
-		log_key
+		respond "I'm behind the rate limiter!"
 	}
-	respond "I'm behind the rate limiter!"
+	respond "Not limited"
 }
-respond "Not limited"
