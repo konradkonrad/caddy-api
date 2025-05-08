@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+docker build -t caddy-api .
+
 mkdir -p data/caddy/{keys,locks,rate_limit/instances}
 
 openssl ecparam -genkey -name prime256v1 -noout \
