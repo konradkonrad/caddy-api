@@ -13,11 +13,18 @@ docker run --rm -it \
     -v $(pwd)/Caddyfile:/etc/caddy/Caddyfile \
     caddy-api /usr/bin/caddy fmt --overwrite /etc/caddy/Caddyfile
 
+docker network create testcaddy
+
 docker run --rm -it \
+    --name testcaddy \
+    --network testcaddy \
+    --network-alias testcaddy \
     -v $(pwd)/Caddyfile:/etc/caddy/Caddyfile:ro \
     -p 8080:8080 \
     -v $(pwd)/data:/data \
     -e VERIFY_KEY_DIR=/data/caddy/keys \
     caddy-api /usr/bin/caddy run -c /etc/caddy/Caddyfile
+
+docker network rm testcaddy
 
 rm -r data

@@ -8,18 +8,24 @@
 	route /api* {
 		rate_limit @noApiKey {
 			distributed
-			zone static_example {
+			zone global {
+				comment "does not match remote host"
 				match {
 					method GET
 				}
 				key static
-				events 4
+				events 12
 				window 1m
 			}
-			zone dynamic_example {
+			zone per_host_burst {
 				key {remote_host}
 				events 2
 				window 1s
+			}
+			zone per_host_long {
+				key {remote_host}
+				events 10
+				window 10s
 			}
 			log_key
 		}
