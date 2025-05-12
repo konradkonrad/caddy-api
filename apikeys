@@ -1,0 +1,8 @@
+@noApiKey {
+    not header Authorization "Bearer key1"
+    not header Authorization "Bearer key2"
+}
+@withApiKey {
+    header Authorization "Bearer key1"
+    header Authorization "Bearer key2"
+}
