@@ -12,6 +12,7 @@ openssl ec -in data/caddy/keys/sign_key.pem -pubout \
 docker run --rm -it \
     -v $(pwd)/Caddyfile:/etc/caddy/Caddyfile \
     -v $(pwd)/apikeys:/etc/caddy/apikeys \
+    -v $(pwd)/users:/etc/caddy/users:ro \
     caddy-api /usr/bin/caddy fmt --overwrite /etc/caddy/Caddyfile
 
 docker network create testcaddy
@@ -22,6 +23,7 @@ docker run --rm -it \
     --network-alias testcaddy \
     -v $(pwd)/Caddyfile:/etc/caddy/Caddyfile:ro \
     -v $(pwd)/apikeys:/etc/caddy/apikeys:ro \
+    -v $(pwd)/users:/etc/caddy/users:ro \
     -p 8080:8080 \
     -v $(pwd)/data:/data \
     -e VERIFY_KEY_DIR=/data/caddy/keys \

@@ -1,8 +1,6 @@
 @noApiKey {
-    not header Authorization "Bearer key1"
-    not header Authorization "Bearer key2"
+    import users/*.deny
 }
 @withApiKey {
-    header Authorization "Bearer key1"
-    header Authorization "Bearer key2"
+    import users/*.allow
 }
