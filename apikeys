@@ -1,6 +1,14 @@
 @noApiKey {
-    import users/*.deny
+	#api key for user1
+	not header Authorization "Bearer key1"
+	#api key for user2
+	not header Authorization "Bearer key2"
 }
+
 @withApiKey {
-    import users/*.allow
+	#api key for user1
+	header Authorization "Bearer key1"
+	#api key for user2
+	header Authorization "Bearer key2"
 }
+
