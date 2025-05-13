@@ -1,0 +1,35 @@
+services:
+  compiler:
+    image: ghcr.io/astral-sh/uv:alpine3.20
+    volumes:
+      - ${PWD}/compiler/apikeys.py:/apikeys.py
+      - ${PWD}/caddy_data:/data
+    environment:
+      - KEYS_FILE=/data/keys.csv
+      - CADDY_SNIPPET=/data/apikeys.caddy
+    command: uv run --script /apikeys.py --compile
+  caddy:
+    build:
+      context: .
+      dockerfile: caddy/Dockerfile
+    image: caddy-docker-proxy-rate-limit
+    ports:
+      - 8080:8080
+      - 443:443
+    environment:
+      - CADDY_INGRESS_NETWORKS=caddy
+    networks:
+      - caddy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${PWD}/caddy_data:/data
+    restart: unless-stopped
+    depends_on:
+      compiler:
+          condition: service_completed_successfully
+
+networks:
+  caddy:
+
+volumes:
+  caddy_data: {}

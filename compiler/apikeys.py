@@ -29,7 +29,9 @@ def read_users() -> Dict[str, str]:
         if "username" in users:
             users.pop("username")
         if any(len(key) < 32 for key in users.values()):
-            sys.exit(f"Malformed keys: {list(filter(lambda _: len(_) < 32, users.values()))}")
+            sys.exit(
+                f"Malformed keys: {list(filter(lambda _: len(_) < 32, users.values()))}"
+            )
         return users
     except FileNotFoundError:
         return {}
@@ -59,6 +61,11 @@ def compile(users: Dict[str, str]) -> None:
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "--compile":
+        users = read_users()
+        compile(users)
+        sys.exit(0)
+
     user = input(
         "User reference (e.g. email) for new key. Empty for only compiling Caddyfile snippet: "
     ).strip()
