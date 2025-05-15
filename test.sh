@@ -5,47 +5,43 @@ ts() {
 }
 
 printf "Testing free resources\n========\n"
-echo "http://localhost:8080"
-for _ in {0..3};
+echo "http://localhost:80"
+for count in {1..4};
 do
     ts
-    curl --ipv4 -w "${PATTERN} \n" http://localhost:8080
+    printf " $count "
+    curl --ipv4 -w "${PATTERN} \n" http://localhost:80
     sleep .01s
 done
 
 
-printf "\nTesting unauthorized rate limits: max per host 2/1s 4/10s global 10/1m\n========\n"
-echo "http://localhost:8080/api"
-for _ in {0..20};
+printf "\nTesting unauthorized rate limits: max per POST endpoint+host 5/1d \n========\n"
+echo "POST http://localhost:80/register_identity"
+for count in {01..11};
 do
     ts
-    curl -w "${PATTERN} \n" http://localhost:8080/api
-    sleep .4s
+    printf " $count "
+    curl -XPOST -w "${PATTERN} \n" http://localhost:80/register_identity
+    sleep .01s
 done
 
-printf "\nTesting unauthorized global rate limits:\n========\n"
-echo "http://localhost:8080/api (different host every time)"
-for _ in {0..6};
+printf "\nTesting unauthorized rate limits: max per GET endpoint+host 20/1d \n========\n"
+echo "http://localhost:80/get_decryption_key"
+for count in {01..21};
 do
     ts
-    docker run --rm -it --network testcaddy curlimages/curl -w "${PATTERN} \n" http://testcaddy:8080/api
-    sleep .4s
+    printf " $count "
+    curl -w "${PATTERN} \n" http://localhost:80/get_decryption_key
+    sleep .01s
 done
 
-printf "\nTesting authorized rate limits: 10/1s @cheap resource\n========\n"
-for _ in {0..20};
+printf "\nTesting authorized rate limits: 1000/1d @get_data_for_encryption\n========\n"
+KEY=$(tail -1 caddy_data/keys.csv|cut -d ',' -f2)
+echo $KEY
+for count in {0001..1001};
 do
     ts
-    curl -H "Authorization: Bearer key1" -w "${PATTERN} \n" http://localhost:8080/api
-    sleep .05s
-done
-
-printf "\nTesting authorized rate limits: 1/1s @expensive resource\n========\n"
-for _ in {0..20};
-do
-    ts
-    curl -H "Authorization: Bearer key1" -w "${PATTERN} key1 \n" http://localhost:8080/api/an_expensive_resource
-    ts
-    curl -H "Authorization: Bearer key2" -w "${PATTERN} key2 \n" http://localhost:8080/api/an_expensive_resource
-    sleep .05s
+    printf " $count "
+    curl -H "Authorization: Bearer ${KEY}" -w "${PATTERN} \n" http://localhost:80/get_data_for_encryption
+    sleep .01s
 done
