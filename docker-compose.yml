@@ -23,74 +23,6 @@ services:
       caddy: localhost:80
       caddy.reverse_proxy: "{{upstreams 8008}}"
 
-      ## Rate limiting:
-      # Make sure to mount compiled 'apikeys' file to this path in caddy container:
-      caddy.import: /etc/caddy/apikeys
-
-      # Rate limits unauthorized
-      caddy.rate_limit_0: "@noApiKey"
-      caddy.rate_limit_0.distributed: " "
-
-      caddy.rate_limit_0.zone_0: register_identity__unauthorized
-      caddy.rate_limit_0.zone_0.key: "{remote_host}"
-      caddy.rate_limit_0.zone_0.events: 5
-      caddy.rate_limit_0.zone_0.window: 1d
-      caddy.rate_limit_0.zone_0.match.path: "*/register_identity*"
-      caddy.rate_limit_0.zone_0.match.method: POST
-
-      caddy.rate_limit_0.zone_1: get_data_for_encryption__unauthorized
-      caddy.rate_limit_0.zone_1.key: "{remote_host}"
-      caddy.rate_limit_0.zone_1.events: 10
-      caddy.rate_limit_0.zone_1.window: 1d
-      caddy.rate_limit_0.zone_1.match.path: "*/get_data_for_encryption*"
-      caddy.rate_limit_0.zone_1.match.method: GET
-
-      caddy.rate_limit_0.zone_2: get_decryption_key__unauthorized
-      caddy.rate_limit_0.zone_2.key: "{remote_host}"
-      caddy.rate_limit_0.zone_2.events: 20
-      caddy.rate_limit_0.zone_2.window: 1d
-      caddy.rate_limit_0.zone_2.match.path: "*/get_decryption_key*"
-      caddy.rate_limit_0.zone_2.match.method: GET
-
-      caddy.rate_limit_0.zone_3: decrypt_commitment__unauthorized
-      caddy.rate_limit_0.zone_3.key: "{remote_host}"
-      caddy.rate_limit_0.zone_3.events: 10
-      caddy.rate_limit_0.zone_3.window: 1d
-      caddy.rate_limit_0.zone_3.match.path: "*/decrypt_commitment*"
-      caddy.rate_limit_0.zone_3.match.method: GET
-
-      # Rate limits with api key
-      caddy.rate_limit_1: "@withApiKey"
-      caddy.rate_limit_1.distributed: " "
-
-      caddy.rate_limit_1.zone_0: register_identity__authorized
-      caddy.rate_limit_1.zone_0.key: "{header.Authorization}"
-      caddy.rate_limit_1.zone_0.events: 500
-      caddy.rate_limit_1.zone_0.window: 1d
-      caddy.rate_limit_1.zone_0.match.path: "*/register_identity*"
-      caddy.rate_limit_1.zone_0.match.method: POST
-
-      caddy.rate_limit_1.zone_1: get_data_for_encryption__authorized
-      caddy.rate_limit_1.zone_1.key: "{header.Authorization}"
-      caddy.rate_limit_1.zone_1.events: 1000
-      caddy.rate_limit_1.zone_1.window: 1d
-      caddy.rate_limit_1.zone_1.match.path: "*/get_data_for_encryption*"
-      caddy.rate_limit_1.zone_1.match.method: GET
-
-      caddy.rate_limit_1.zone_2: get_decryption_key__authorized
-      caddy.rate_limit_1.zone_2.key: "{header.Authorization}"
-      caddy.rate_limit_1.zone_2.events: 2000
-      caddy.rate_limit_1.zone_2.window: 1d
-      caddy.rate_limit_1.zone_2.match.path: "*/get_decryption_key*"
-      caddy.rate_limit_1.zone_2.match.method: GET
-
-      caddy.rate_limit_1.zone_3: decrypt_commitment__authorized
-      caddy.rate_limit_1.zone_3.key: "{header.Authorization}"
-      caddy.rate_limit_1.zone_3.events: 1000
-      caddy.rate_limit_1.zone_3.window: 1d
-      caddy.rate_limit_1.zone_3.match.path: "*/decrypt_commitment*"
-      caddy.rate_limit_1.zone_3.match.method: GET
-
   caddy:
     build:
       context: .
@@ -105,7 +37,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./caddy_data/config:/config
-      - ./caddy_data/apikeys.caddy:/etc/caddy/apikeys
     restart: unless-stopped
     depends_on:
       compiler:
