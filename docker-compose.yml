@@ -11,7 +11,7 @@ services:
       - caddy
     command: uv run --script /apikeys.py --compile
 
-  api:
+  shutter-api:
     image: ghcr.io/astral-sh/uv:python3.13-alpine
     volumes:
       - ./simple.py:/simple.py

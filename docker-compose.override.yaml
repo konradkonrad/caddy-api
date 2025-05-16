@@ -1,9 +1,11 @@
 services:
-  api:
+  shutter-api:
     labels:
       ## Rate limiting:
       # Make sure to mount compiled 'apikeys' file to this path in caddy container:
       caddy.import: /etc/caddy/apikeys
+      caddy.handle_errors: 429
+      caddy.handle_errors.respond: "\"Error {err.status_code}. You're rate limited. You can try again in {http.response.header.Retry-After} seconds. See documentation!\""
 
       # Rate limits unauthorized
       caddy.rate_limit_0: "@noApiKey"
