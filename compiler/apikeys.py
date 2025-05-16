@@ -5,6 +5,17 @@
 # ]
 # ///
 
+"""
+Utility for handling API keys with caddy. There are two functions:
+    - generating new keys and store them in the user database .csv (${KEYS_FILE})
+    - compiling a Caddyfile snippet for using those keys (${CADDY_SNIPPET})
+
+Without arguments it is started interactively and will ask for a reference for a new key.
+
+If used in a docker-compose setup, it can be run with the `--compile` flag, that will
+non-interactively compile the `Caddyfile` snippet to use.
+"""
+
 import os
 import sys
 import secrets
