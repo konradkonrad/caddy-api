@@ -36,12 +36,12 @@ do
 done
 
 printf "\nTesting authorized rate limits: 1000/1d @get_data_for_encryption\n========\n"
-KEY=$(tail -1 caddy_data/keys.csv|cut -d ',' -f2)
+KEY=$(cat caddy_data/apikeys.caddy|grep Bearer|tail -1|cut -d'"' -f2)
 echo $KEY
 for count in {0001..1001};
 do
     ts
     printf " $count "
-    curl -H "Authorization: Bearer ${KEY}" -w "${PATTERN} \n" http://localhost:80/get_data_for_encryption
+    curl -H "Authorization: ${KEY}" -w "${PATTERN} \n" http://localhost:80/get_data_for_encryption
     sleep .01s
 done
