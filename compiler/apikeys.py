@@ -57,6 +57,8 @@ def dump_users(users: Dict[str, str]) -> None:
 
 def compile(users: Dict[str, str]) -> None:
     tab = "\t"
+    if len(users) == 0:
+        users["THROWAWAY DO NOT USE!!!"] = generate_token()
     with open(CADDY_SNIPPET, "wb") as f:
         f.write(b"@noApiKey {\n")
         for user, key in users.items():
