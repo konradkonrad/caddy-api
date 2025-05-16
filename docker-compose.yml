@@ -24,10 +24,7 @@ services:
       caddy.reverse_proxy: "{{upstreams 8008}}"
 
   caddy:
-    build:
-      context: .
-      dockerfile: caddy/Dockerfile
-    image: caddy-docker-proxy-rate-limit
+    image: lucaslorentz/caddy-docker-proxy:latest
     ports:
       - 80:80
     environment:

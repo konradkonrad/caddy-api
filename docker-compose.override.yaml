@@ -72,5 +72,9 @@ services:
       caddy.rate_limit_1.zone_3.match.method: GET
 
   caddy:
+    build:
+      context: .
+      dockerfile: caddy/Dockerfile
+    image: caddy-docker-proxy-rate-limit
     volumes:
       - ./caddy_data/apikeys.caddy:/etc/caddy/apikeys
