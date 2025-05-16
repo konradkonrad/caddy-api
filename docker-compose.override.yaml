@@ -1,4 +1,13 @@
 services:
+  compiler:
+    image: ghcr.io/astral-sh/uv:python3.13-alpine
+    volumes:
+      - ./compiler/apikeys.py:/apikeys.py
+      - ./caddy_data:/data
+    environment:
+      - KEYS_FILE=/data/keys.csv
+      - CADDY_SNIPPET=/data/apikeys.caddy
+    command: uv run --script /apikeys.py --compile
   shutter-api:
     labels:
       ## Rate limiting:
@@ -78,3 +87,6 @@ services:
     image: caddy-docker-proxy-rate-limit
     volumes:
       - ./caddy_data/apikeys.caddy:/etc/caddy/apikeys
+    depends_on:
+      compiler:
+          condition: service_completed_successfully

@@ -1,15 +1,4 @@
 services:
-  compiler:
-    image: ghcr.io/astral-sh/uv:python3.13-alpine
-    volumes:
-      - ./compiler/apikeys.py:/apikeys.py
-      - ./caddy_data:/data
-    environment:
-      - KEYS_FILE=/data/keys.csv
-      - CADDY_SNIPPET=/data/apikeys.caddy
-    networks:
-      - caddy
-    command: uv run --script /apikeys.py --compile
 
   shutter-api:
     image: ghcr.io/astral-sh/uv:python3.13-alpine
@@ -35,9 +24,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./caddy_data/config:/config
     restart: unless-stopped
-    depends_on:
-      compiler:
-          condition: service_completed_successfully
     entrypoint: /usr/bin/caddy
     command: docker-proxy run
 
