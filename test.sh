@@ -35,9 +35,17 @@ do
     sleep .01s
 done
 
-printf "\nTesting authorized rate limits: 1000/1d @get_data_for_encryption\n========\n"
 KEY=$(cat caddy_data/apikeys.caddy|grep Bearer|tail -1|cut -d'"' -f2)
 echo $KEY
+
+printf "\nTest authentication\n=========\n"
+ts
+curl -w "${PATTERN} \n" http://localhost:80/check_authentication
+ts
+curl -H "Authorization: ${KEY}" -w "${PATTERN} \n" http://localhost:80/check_authentication
+
+printf "\nTesting authorized rate limits: 1000/1d @get_data_for_encryption\n========\n"
+
 for count in {0001..1001};
 do
     ts
